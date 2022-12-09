@@ -23,6 +23,7 @@ class EmojiMemoryGame: ObservableObject {
         themeName = theme.name
     }
     
+    /// Creates a new memory game , discarding data from the old one
     func createMemoryGame() {
         let theme = EmojiGameTheme.themes.randomElement()
         let emojis = theme!.emojis.shuffled()

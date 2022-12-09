@@ -12,11 +12,13 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+            // New Game Button
             Button(action: {
                 viewModel.createMemoryGame()
             }, label: {
                 Text("New Game")
             })
+            // Theme Name + Score
             HStack {
                 Text(viewModel.themeName)
                 Spacer()
@@ -24,6 +26,7 @@ struct ContentView: View {
             }
             .padding(.horizontal)
             .font(.title)
+            // View of All Cards for Active Game
             ScrollView {
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))]) {
                     ForEach(viewModel.cards) { card in
@@ -62,7 +65,7 @@ struct CardView: View {
                 Text(card.content)
                     .font(.largeTitle)
             } else if card.isMatched {
-                shape.opacity(0)
+                shape.opacity(0) // Hides the card by making it invisible
             }
             else {
                 shape
