@@ -8,21 +8,47 @@
 import SwiftUI
 
 class EmojiMemoryGame: ObservableObject {
-    static var emojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁"]
+    @Published private var model: MemoryGame<String>
+    var color: Color
+    var themeName: String
+    var score: Int
     
-    static func createMemoryGame() -> MemoryGame<String> {
-         MemoryGame<String>(numberOfPairsOfCards: 4) { pairIndex in
-             emojis[pairIndex]
-        }
+    init() {
+        score = 0
+        let theme = EmojiGameTheme.themes.randomElement()!
+        model = MemoryGame(numberOfPairsOfCards: theme.numberOfPairs, createCardContent: { pairIndex in
+            theme.emojis[pairIndex]
+        })
+        color = theme.color
+        themeName = theme.name
     }
     
-    @Published private var model: MemoryGame<String> = createMemoryGame()
+    func createMemoryGame() {
+        let theme = EmojiGameTheme.themes.randomElement()
+        let emojis = theme!.emojis.shuffled()
+        model = MemoryGame(numberOfPairsOfCards: theme!.numberOfPairs) { emojis[$0] }
+        score = model.score
+        color = theme?.color ?? Color.red
+        themeName = theme!.name
+    }
     
     var cards: Array<MemoryGame<String>.Card> {
         model.cards
     }
     
     func choose(_ card: MemoryGame<String>.Card) {
-        model.choose(card)
+        score = model.choose(card)
     }
+}
+
+struct EmojiGameTheme {
+    let name: String
+    let emojis: [String]
+    let numberOfPairs: Int
+    let color: Color
+    
+    static var themes = [
+        EmojiGameTheme(name: "Animals", emojis: ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐻‍❄️", "🐨", "🐯", "🦁"], numberOfPairs: 8, color: Color.red),
+        EmojiGameTheme(name: "Vehicles", emojis: ["🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐", "🛻", "🚚"], numberOfPairs: 8, color: Color.blue)
+    ]
 }
